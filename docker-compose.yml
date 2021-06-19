@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  webserver:
+    build: .
+    container_name: web_store
+    ports:
+      - '80:80'
+    volumes:
+      - ./:/var/www/
+    depends_on:
+      - db
+  db:
+    platform: linux/x86_64
+    container_name: db_store
+    image: mysql
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=store
+      - MYSQL_DATABASE=store

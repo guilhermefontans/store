@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col 12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Produtos😁</h1>
+            <a href="/admin/products/create" class="btn btn-success">Create product</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Created At</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% for product in products %}
+                    <th>{{ product.id }}</th>
+                    <th>{{ product.name }}</th>
+                    <th>{{ product.createdAt|date('d/m/Y H:i:s') }}</th>
+                {% endfor %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

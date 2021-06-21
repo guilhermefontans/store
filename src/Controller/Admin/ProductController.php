@@ -17,12 +17,50 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductController extends AbstractController
 {
     /**
-     * @Route("/", name="admin_product")
+     * @Route("/", name="index_products")
      */
     public function index(): Response
     {
-        $products = $this->getDoctrine()->getRepository(Product::class)->findAll()??[];
-        return $this->render('admin/product/index.html.twig', compact($products));
+        $products = $this->getDoctrine()->getRepository(Product::class)->findAll();
+
+        return $this->render('admin/product/index.html.twig', ['products' => $products]);
+    }
+
+    /**
+     * @Route("/edit/{product}", name="edit_products")
+     */
+    public function edit($product)
+    {
+        $product = $this->getDoctrine()->getRepository(Product::class)->find($product);
+        return $this->render('admin/product/edit.html.twig', ['product' => $product]);
+    }
+
+    /**
+     * @Route("/update/{product}", name="update_products", methods={"POST"})
+     *
+     * @param $product
+     * @param Request $request
+     */
+    public function update($product, Request $request)
+    {
+        try {
+            $data = $request->request->all();
+            $product = $this->getDoctrine()->getRepository(Product::class)->find($product);
+
+            $product->setName($data['name']);
+            $product->setDescription($data['description']);
+            $product->setBody($data['body']);
+            $product->setSlug($data['slug']);
+            $product->setPrice($data['price']);
+
+            $product->setUpdatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));
+
+            $manager = $this->getDoctrine()->getManager();
+            $manager->flush();
+            return $this->redirectToRoute('admin_edit_products', ['product' => $product->getId()]);
+        } catch (\Exception $exception) {
+            die($exception->getMessage());
+        }
     }
 
     /**
@@ -39,6 +77,45 @@ class ProductController extends AbstractController
      */
     public function store(Request $request)
     {
-        dd($request->request->all());
+        try {
+            $data = $request->request->all();
+            $product = new Product();
+
+            $product->setName($data['name']);
+            $product->setDescription($data['description']);
+            $product->setBody($data['body']);
+            $product->setSlug($data['slug']);
+            $product->setPrice($data['price']);
+
+            $product->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));
+            $product->setUpdatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));
+
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($product);
+            $manager->flush();
+
+            return $this->redirectToRoute('admin_index_products');
+        } catch (\Exception $exception) {
+            die($exception->getMessage());
+        }
+    }
+
+    /**
+     * @Route("/remove/{product}", name="remove_products")
+     * @param $product
+     */
+    public function remove($product)
+    {
+        try {
+            $product = $this->getDoctrine()->getRepository(Product::class)->find($product);
+
+            $manager = $this->getDoctrine()->getManager();
+            $manager->remove($product);
+            $manager->flush();
+
+            return $this->redirectToRoute('admin_index_products');
+        } catch (\Exception $exception) {
+            die($exception->getMessage());
+        }
     }
 }

@@ -139,6 +139,11 @@ class User
     {
         $this->address = $address;
 
+        $newUser = null === $address ? null : $this;
+        if($address->getUser() !== $newUser) {
+            $address->setUser($newUser);
+        }
+
         return $this;
     }
 }

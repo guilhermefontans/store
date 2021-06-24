@@ -49,7 +49,7 @@ class User
     private $updatedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity="Address", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"})
      */
     private $address;
 
@@ -126,6 +126,18 @@ class User
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address)
+    {
+        $this->address = $address;
 
         return $this;
     }

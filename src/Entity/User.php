@@ -55,7 +55,7 @@ class User
     private $address;
 
     /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $orders;
 

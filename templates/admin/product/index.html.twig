@@ -23,13 +23,13 @@
             <tbody>
             {% for product in products %}
                 <tr>
-                    <th>{{ product.id }}</th>
-                    <th>{{ product.name }}</th>
-                    <th>{{ product.createdAt|date('d/m/Y H:i:s') }}</th>
-                    <th>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.createdAt|date('d/m/Y H:i:s') }}</td>
+                    <td>
                         <a href="{{ path('admin_edit_products', {product: product.id}) }}" class="btn btn-sm btn-primary">Edit</a>
                         <a href="{{ path('admin_remove_products', {product: product.id}) }}" class="btn btn-sm btn-danger">Remove</a>
-                    </th>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

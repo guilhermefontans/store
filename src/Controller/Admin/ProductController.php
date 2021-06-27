@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use App\Form\ProductType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +34,7 @@ class ProductController extends AbstractController
     {
         $product = $this->getDoctrine()->getRepository(Product::class)->find($product);
         return $this->render('admin/product/edit.html.twig', ['product' => $product]);
+
     }
 
     /**
@@ -70,9 +72,24 @@ class ProductController extends AbstractController
      * @Route("/create", name="create_products")
      * @return Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return $this->render('admin/product/create.html.twig');
+        $form = $this->createForm(ProductType::class, new Product());
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            /** @var Product $product */
+            $product = $form->getData();
+            $product->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));
+            $product->setUpdatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));
+
+            $this->getDoctrine()->getManager()->persist($product);
+            $this->getDoctrine()->getManager()->flush();
+
+            $this->addFlash('success', 'Product created successfully');
+            return $this->redirectToRoute('admin_index_products');
+        }
+        return $this->render('admin/product/create.html.twig', ['form' => $form->createView()]);
     }
 
     /**

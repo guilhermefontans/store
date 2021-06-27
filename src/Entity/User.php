@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -49,9 +50,19 @@ class User
     private $updatedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist", "remove"})
      */
     private $address;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $orders;
+
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -144,6 +155,34 @@ class User
             $address->setUser($newUser);
         }
 
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getOrders(): ArrayCollection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order)
+    {
+        if (! $this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeOrder(Order $order)
+    {
+        if ($this->orders->contains($order)) {
+            $this->orders->remove($order);
+                if ($order->getUser() === $this) {
+                    $order->setUser(null);
+                }
+        }
         return $this;
     }
 }

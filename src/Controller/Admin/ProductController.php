@@ -60,7 +60,7 @@ class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, new Product());
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             /** @var Product $product */
             $product = $form->getData();
             $product->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));

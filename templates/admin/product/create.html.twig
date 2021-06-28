@@ -9,7 +9,7 @@
         <hr>
     </div>
     <div class="col-12">
-        {{ form_start(form) }}
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
             {{ form_widget(form) }}
             <button type="submit" class="btn btn-success">Save</button>
         {{ form_end(form) }}

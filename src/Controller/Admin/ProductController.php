@@ -30,42 +30,25 @@ class ProductController extends AbstractController
     /**
      * @Route("/edit/{product}", name="edit_products")
      */
-    public function edit($product)
+    public function edit($product, Request $request)
     {
         $product = $this->getDoctrine()->getRepository(Product::class)->find($product);
-        return $this->render('admin/product/edit.html.twig', ['product' => $product]);
+        $form = $this->createForm(ProductType::class, $product);
 
-    }
+        $form->handleRequest($request);
 
-    /**
-     * @Route("/update/{product}", name="update_products", methods={"POST"})
-     *
-     * @param $product
-     * @param Request $request
-     */
-    public function update($product, Request $request)
-    {
-        try {
-            $data = $request->request->all();
-            $product = $this->getDoctrine()->getRepository(Product::class)->find($product);
-
-            $product->setName($data['name']);
-            $product->setDescription($data['description']);
-            $product->setBody($data['body']);
-            $product->setSlug($data['slug']);
-            $product->setPrice($data['price']);
-
+        if ($form->isSubmitted()) {
+            /** @var Product $product */
+            $product = $form->getData();
             $product->setUpdatedAt(new \DateTimeImmutable('now', new \DateTimeZone('America/Sao_Paulo')));
 
-            $manager = $this->getDoctrine()->getManager();
-            $manager->flush();
+            $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'Product updated successfully');
-            
             return $this->redirectToRoute('admin_edit_products', ['product' => $product->getId()]);
-        } catch (\Exception $exception) {
-            die($exception->getMessage());
         }
+        return $this->render('admin/product/edit.html.twig', ['form' => $form->createView()]);
+
     }
 
     /**
